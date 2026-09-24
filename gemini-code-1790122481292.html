@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Entrenador SIMCE Avanzado II° Medio - Lenguaje</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    h1, h2, h3, .font-heading { font-family: 'Space Grotesk', sans-serif; }
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #0f172a; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col selection:bg-indigo-500 selection:text-white">
+
+  <!-- Header -->
+  <header class="border-b border-slate-800 bg-slate-900/90 backdrop-blur sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="p-2.5 bg-gradient-to-tr from-indigo-600 to-violet-600 rounded-xl text-white shadow-lg shadow-indigo-500/20">
+          <i class="fa-solid fa-brain text-xl"></i>
+        </div>
+        <div>
+          <h1 class="font-extrabold text-lg text-white leading-none tracking-tight">SIMCE Máximo II° Medio</h1>
+          <p class="text-xs text-indigo-400 font-medium mt-0.5">Entrenamiento de Alta Exigencia • Comprensión Lectora</p>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-3">
+        <div class="hidden sm:flex items-center space-x-2 bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700/80 text-xs text-slate-300">
+          <i class="fa-solid fa-graduation-cap text-indigo-400"></i>
+          <span>Exigencia: <b>60%</b> (Escala 1.0 - 7.0)</span>
+        </div>
+        <button onclick="resetAppConfirm()" class="text-xs text-rose-400 hover:text-rose-300 font-semibold px-2.5 py-1.5 rounded-lg border border-rose-900/50 hover:bg-rose-950/50 transition">
+          <i class="fa-solid fa-rotate-right mr-1"></i> Reiniciar
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+    <!-- Metrics Dashboard -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 flex items-center space-x-4 shadow-sm">
+        <div class="p-3 bg-amber-500/10 text-amber-400 rounded-xl border border-amber-500/20">
+          <i class="fa-solid fa-award text-2xl"></i>
+        </div>
+        <div>
+          <p class="text-xs text-slate-400 font-medium">Promedio Notas</p>
+          <p id="statAvgGrade" class="text-2xl font-black text-white font-heading">---</p>
+        </div>
+      </div>
+
+      <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 flex items-center space-x-4 shadow-sm">
+        <div class="p-3 bg-indigo-500/10 text-indigo-400 rounded-xl border border-indigo-500/20">
+          <i class="fa-solid fa-chart-simple text-2xl"></i>
+        </div>
+        <div>
+          <p class="text-xs text-slate-400 font-medium">Promedio SIMCE</p>
+          <p id="statAvgSimce" class="text-2xl font-black text-white font-heading">--- pts</p>
+        </div>
+      </div>
+
+      <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 flex items-center space-x-4 shadow-sm">
+        <div class="p-3 bg-emerald-500/10 text-emerald-400 rounded-xl border border-emerald-500/20">
+          <i class="fa-solid fa-circle-check text-2xl"></i>
+        </div>
+        <div>
+          <p class="text-xs text-slate-400 font-medium">Completados</p>
+          <p id="statCompleted" class="text-2xl font-black text-white font-heading">0 / 0</p>
+        </div>
+      </div>
+
+      <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 flex items-center space-x-4 shadow-sm">
+        <div class="p-3 bg-rose-500/10 text-rose-400 rounded-xl border border-rose-500/20">
+          <i class="fa-solid fa-layer-group text-2xl"></i>
+        </div>
+        <div>
+          <p class="text-xs text-slate-400 font-medium">Pendientes</p>
+          <p id="statPending" class="text-2xl font-black text-white font-heading">0</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Instruction Info Box -->
+    <div class="bg-gradient-to-r from-slate-900 via-indigo-950/40 to-slate-900 border border-indigo-500/30 rounded-2xl p-5 mb-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <div class="flex items-start space-x-3.5">
+        <div class="p-2 bg-indigo-500/20 text-indigo-300 rounded-lg mt-0.5">
+          <i class="fa-solid fa-circle-info text-lg"></i>
+        </div>
+        <div class="text-sm">
+          <p class="font-bold text-indigo-200 text-base">Plan de Entrenamiento Bloqueado e Integrado</p>
+          <p class="text-slate-300 mt-0.5">Cada ensayo contiene textos extensos y preguntas de inferencia, vocabulario contextual y síntesis. Debes aprobar o rendir cada prueba para desbloquear la siguiente.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- List View -->
+    <div id="viewList" class="space-y-6">
+      <div class="flex items-center justify-between">
+        <h2 class="text-2xl font-bold text-white font-heading">Ensayos Disponibles</h2>
+      </div>
+      <div id="daysGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <!-- Dynamic Cards -->
+      </div>
+    </div>
+
+    <!-- Test View -->
+    <div id="viewTest" class="hidden space-y-6">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+        <button onclick="closeTest()" class="text-sm text-slate-400 hover:text-white flex items-center space-x-2 transition">
+          <i class="fa-solid fa-arrow-left"></i>
+          <span>Volver al menú</span>
+        </button>
+        <span id="testDayBadge" class="bg-indigo-900/60 text-indigo-300 border border-indigo-500/40 text-xs font-bold px-3 py-1.5 rounded-full">
+          Ensayo N° 1
+        </span>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <!-- Left Column: Reading Passage -->
+        <div class="lg:col-span-6 bg-slate-900/60 border border-slate-800 rounded-2xl p-6 flex flex-col shadow-inner">
+          <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-800">
+            <span id="testTextCategory" class="text-xs font-bold uppercase tracking-wider text-indigo-400">Texto Argumentativo</span>
+            <span id="testWordCount" class="text-xs text-slate-400"><i class="fa-solid fa-file-lines mr-1"></i> Lectura II° Medio</span>
+          </div>
+          <h2 id="testTextTitle" class="text-2xl font-bold text-white mb-4 leading-tight font-heading"></h2>
+          <div id="testTextBody" class="prose prose-invert max-w-none text-slate-300 space-y-4 text-sm sm:text-base leading-relaxed overflow-y-auto max-h-[65vh] pr-3 custom-scrollbar">
+          </div>
+        </div>
+
+        <!-- Right Column: Interactive Questions -->
+        <div class="lg:col-span-6 flex flex-col space-y-6">
+          <div id="questionsContainer" class="space-y-6 overflow-y-auto max-h-[65vh] pr-2 custom-scrollbar">
+            <!-- Questions rendered here -->
+          </div>
+
+          <div id="testActionArea" class="pt-4 border-t border-slate-800">
+            <button id="btnSubmitTest" onclick="submitTest()" class="w-full py-4 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-bold rounded-xl shadow-lg shadow-indigo-600/25 transition flex items-center justify-center space-x-2 text-base">
+              <i class="fa-solid fa-check-double"></i>
+              <span>Corregir Ensayo y Calcular Nota</span>
+            </button>
+          </div>
+
+          <!-- Feedback Card -->
+          <div id="resultCard" class="hidden bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-6">
+            <div class="text-center space-y-2 border-b border-slate-800 pb-5">
+              <p class="text-xs font-bold uppercase tracking-widest text-slate-400">Resultado Oficial Chile</p>
+              <div class="flex items-center justify-center space-x-6 my-2">
+                <div>
+                  <span class="text-xs text-slate-400 block">Nota Chilena</span>
+                  <span id="resGrade" class="text-4xl font-black font-heading text-emerald-400">7.0</span>
+                </div>
+                <div class="h-10 w-px bg-slate-800"></div>
+                <div>
+                  <span class="text-xs text-slate-400 block">Puntaje SIMCE</span>
+                  <span id="resSimceScore" class="text-4xl font-black font-heading text-indigo-400">350 pts</span>
+                </div>
+              </div>
+              <p id="resAccuracy" class="text-xs text-slate-400">5 de 5 correctas (100%)</p>
+            </div>
+
+            <div id="resFeedbackList" class="space-y-4 text-xs sm:text-sm">
+              <!-- Question by question review -->
+            </div>
+
+            <button onclick="closeTest()" class="w-full py-3.5 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl transition">
+              Continuar al Siguiente Ensayo
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // Comprehensive Bank of Rigorous SIMCE Tests for 2° Medio
+    const SIMCE_BANK = [
+      {
+        day: 1,
+        title: "La Sociedad de la Transparencia y la Pérdida del Misterio",
+        category: "Ensayo Filosófico / Opinión",
+        text: `El filósofo Byung-Chul Han sostiene que la sociedad contemporánea habita un paradigma de 'transparencia compulsiva'. Todo debe ser expuesto, exhibido y consumido de forma inmediata en las plataformas digitales. En este escenario, la intimidad y el secreto no son vistos como refugios de la libertad personal, sino como sospechosos vestigios de opacidad que atentan contra la circulación continua de la información.<br><br>Esta exposición irrestricta destruye la distancia contemplativa necesaria para el pensamiento profundo. Cuando el sujeto se transforma en su propio escaparate publicitario, la experiencia estética y el amor pierden su alteridad; es decir, aquello que nos desconcierta o nos desafía deja de ser tolerado. Se busca únicamente la confirmación narcisista del 'Me gusta'.<br><br>Por lo tanto, la verdadera resistencia cultural no reside en publicar más ni en acelerar los intercambios, sino en el cultivo del silencio, la opacidad protectora y la capacidad de habitar espacios que no puedan ser cuantificados por ningún algoritmo.`,
+        questions: [
+          {
+            q: "1. ¿Qué sentido tiene la palabra VESTIGIOS en el primer párrafo del texto?",
+            options: [
+              "A) ADORNOS, porque la intimidad es un complemento estético secundario.",
+              "B) RASTROS, porque la intimidad es vista como un resto obsoleto del pasado.",
+              "C) OBSTÁCULOS, porque la intimidad impide el correcto uso de la tecnología.",
+              "D) PRUEBAS, porque la opacidad confirma la comisión de actos ilícitos."
+            ],
+            correct: 1,
+            exp: "En el contexto, 'vestigios' alude a restos o señales de algo que está desapareciendo (la intimidad) frente a la transparencia compulsiva."
+          },
+          {
+            q: "2. ¿Cuál es la tesis central que defiende el emisor del fragmento?",
+            options: [
+              "A) Las redes sociales deben prohibirse debido al daño psicológico que provocan en la juventud.",
+              "B) La transparencia compulsiva destruye la reflexión profunda e íntima, siendo necesario rescatar la opacidad.",
+              "C) El amor y la estética han desaparecido definitivamente de la civilización occidental.",
+              "D) La cuantificación algorítmica es el único método válido para medir el desarrollo cultural."
+            ],
+            correct: 1,
+            exp: "El autor argumenta que la exposición total arruina la contemplación y propone como resistencia la intimidad y el silencio."
+          },
+          {
+            q: "3. Del segundo párrafo se puede INFERIR que el botón 'Me gusta':",
+            options: [
+              "A) Promueve el debate crítico y pluralista entre usuarios de redes sociales.",
+              "B) Representa un mecanismo de validación que refuerza el egocentrismo del individuo.",
+              "C) Es una herramienta útil para evaluar la calidad objetiva de una obra de arte.",
+              "D) Garantiza que las publicaciones respeten la privacidad de las personas."
+            ],
+            correct: 1,
+            exp: "El texto afirma que 'Se busca únicamente la confirmación narcisista del Me gusta', de lo que se infiere que alimenta el egocentrismo."
+          },
+          {
+            q: "4. ¿Con qué objetivo el emisor menciona el concepto de 'alteridad'?",
+            options: [
+              "A) Para demostrar que las redes sociales fomentan la tolerancia hacia lo diferente.",
+              "B) Para ejemplificar cómo el consumo digital rechaza aquello que descoloca o cuestiona al sujeto.",
+              "C) Para proponer un nuevo algoritmo de interacción digital sin censura.",
+              "D) Para definir el significado técnico del amor en la filosofía moderna."
+            ],
+            correct: 1,
+            exp: "La alteridad alude a 'lo otro' o lo que desconcierta; se menciona para mostrar cómo la cultura del narcisismo rechaza lo diferente."
+          },
+          {
+            q: "5. ¿Qué propuesta de acción se deriva de la conclusión del texto?",
+            options: [
+              "A) Aumentar las horas de transmisión en directo para democratizar la cultura.",
+              "B) Preservar momentos de desconexión y privacidad no digitalizados.",
+              "C) Diseñar aplicaciones móviles más éticas y transparentes.",
+              "D) Eliminar las cuentas de usuario que no utilicen su nombre real."
+            ],
+            correct: 1,
+            exp: "El autor invita al 'cultivo del silencio, la opacidad protectora y la capacidad de habitar espacios no cuantificables'."
+          }
+        ]
+      },
+      {
+        day: 2,
+        title: "Extracto de 'Hijo de Ladrón' - Manuel Rojas",
+        category: "Texto Literario Narrativo",
+        text: `¿Cómo y por qué llegué a la cárcel de Valparaíso? Es una historia larga y, sobre todo, confusa. Hay hechos que no se explican por sí solos, sino por la acumulación invisible de pequeños accidentes previos. Yo era joven, delgado, con esa palidez característica de quienes comen poco y caminan demasiado por calles de adoquines húmedos.<br><br>Mi padre era un hombre al que la sociedad llamaba 'delincuente', como si esa palabra pudiera encerrar la complejidad de un ser humano que compartía su pan con los perros callejeros y leía periódicos viejos a la luz de una vela. En la celda, el olor a humedad y a tabaco rancio se incrustaba en los huesos. Allí comprendí que la libertad no es la ausencia de barrotes, sino la capacidad de mantener el pensamiento limpio de rencor cuando todos a tu alrededor han sido aplastados por la miseria.`,
+        questions: [
+          {
+            q: "1. ¿Qué actitud demuestra el narrador hacia la figura de su padre?",
+            options: [
+              "A) Desprecio profundo por haberlo arrastrado a la delincuencia.",
+              "B) Comprensión y matiz frente a las etiquetas reduccionistas de la sociedad.",
+              "C) Indiferencia absoluta hacia su estilo de vida marginal.",
+              "D) Admiración desmedida considerando sus delitos como actos heroicos."
+            ],
+            correct: 1,
+            exp: "El narrador cuestiona que la palabra 'delincuente' encierre la complejidad de su padre, mostrando una mirada comprensiva y crítica del prejuicio."
+          },
+          {
+            q: "2. ¿Cómo caracteriza el narrador las causas que lo llevaron a prisión?",
+            options: [
+              "A) Como un plan perfectamente premeditado desde su infancia.",
+              "B) Como un hecho fortuito e injusto provocado por la policía.",
+              "C) Como el resultado confuso de una suma de incidentes acumulados.",
+              "D) Como la consecuencia inevitable de una herencia genética."
+            ],
+            correct: 2,
+            exp: "El texto señala expresamente que se debió a 'la acumulación invisible de pequeños accidentes previos'."
+          },
+          {
+            q: "3. ¿Qué concepto de 'libertad' elabora el narrador durante su estadía en la celda?",
+            options: [
+              "A) Salir físicamente del recinto carcelario lo antes posible.",
+              "B) Conservar la dignidad y la mente libre de odio pese al sufrimiento extremo.",
+              "C) Vengarse de las autoridades judiciales una vez cumplida la condena.",
+              "D) Acostumbrarse a la miseria para no sentir dolor físico."
+            ],
+            correct: 1,
+            exp: "El texto afirma que la libertad es 'la capacidad de mantener el pensamiento limpio de rencor cuando todos han sido aplastados'."
+          },
+          {
+            q: "4. En el primer párrafo, la expresión 'palidez característica' funciona como un recurso para:",
+            options: [
+              "A) Denunciar una enfermedad infecciosa grave en la época.",
+              "B) Describir físicamente la precariedad y privación social del protagonista.",
+              "C) Destacar la elegancia del personaje principal.",
+              "D) Criticar el clima lluvioso de la ciudad de Valparaíso."
+            ],
+            correct: 1,
+            exp: "La palidez asociada a 'comer poco y caminar demasiado' simboliza la desnutrición y pobreza del personaje."
+          },
+          {
+            q: "5. ¿Cuál es la atmósfera predominante en el fragmento?",
+            options: [
+              "A) Cómica y satírica.",
+              "B) Melancólica, reflexiva y de dura realidad social.",
+              "C) De suspenso policial violento.",
+              "D) Fantástica y surrealista."
+            ],
+            correct: 1,
+            exp: "El tono es introspectivo y aborda la marginalidad con sensibilidad y profundidad psicológica."
+          }
+        ]
+      },
+      {
+        day: 3,
+        title: "Edición Genética CRISPR: La Encrucijada Ética del Siglo XXI",
+        category: "Texto Expositivo Científico",
+        text: `La tecnología de edición genética CRISPR-Cas9 permite cortar y modificar secuencias del ADN con una precisión sin precedentes. Esta herramienta ha revolucionado la medicina, abriendo la posibilidad real de erradicar enfermedades hereditarias como la anemia falciforme o la fibrosis quística antes del nacimiento.<br><br>Sin embargo, la frontera entre la terapia curativa y el 'mejoramiento genético' estético es extremadamente difusa. Si se permite la modificación de embriones humanos para alterar rasgos de inteligencia, altura o resistencia física, la brecha de desigualdad socioeconómica podría convertirse en una fractura biológica e irreversible. Aquellos con recursos económicos suficientes podrían 'diseñar' descendientes genéticamente superiores, relegando al resto de la población a una desventaja biológica permanente.<br><br>Por esta razón, la comunidad científica internacional ha solicitado moratorias y regulaciones estrictas. La ciencia avanza a pasos agigantados, pero la bioética debe determinar los límites para evitar que la eugenesia mercantilizada destruya el principio de igualdad humana.`,
+        questions: [
+          {
+            q: "1. ¿Cuál es el problema ético principal planteado en el texto respecto a CRISPR?",
+            options: [
+              "A) Que la técnica es demasiado costosa para ser investigada por universidades públicas.",
+              "B) El riesgo de convertir diferencias económicas en desigualdades biológicas hereditarias mediante el mejoramiento genético.",
+              "C) El peligro de que los virus muten al entrar en contacto con el ADN editado.",
+              "D) La falta de interés de la industria médica por curar enfermedades genéticas."
+            ],
+            correct: 1,
+            exp: "El texto alerta que si solo los ricos 'diseñan' a sus hijos, la brecha económica se volverá una fractura biológica irreversible."
+          },
+          {
+            q: "2. ¿Qué diferencia establece el autor entre 'terapia curativa' y 'mejoramiento genético'?",
+            options: [
+              "A) La terapia busca curar patologías severas, mientras que el mejoramiento altera rasgos sin fines médicos.",
+              "B) La terapia es ilegal en todo el mundo, mientras el mejoramiento está permitido.",
+              "C) La terapia utiliza medicamentos químicos y el mejoramiento solo radiación.",
+              "D) No existe ninguna diferencia, ambos conceptos son exactamente idénticos."
+            ],
+            correct: 0,
+            exp: "La terapia combate enfermedades hereditarias (como fibrosis quística) y el mejoramiento altera rasgos deseables como la altura o inteligencia."
+          },
+          {
+            q: "3. ¿Qué sentido tiene la palabra MORATORIAS en el tercer párrafo?",
+            options: [
+              "A) FINANCIAMIENTOS, para acelerar las pruebas en seres humanos.",
+              "B) SUSPENSIONES, para pausar temporalmente los experimentos hasta fijar reglas éticas.",
+              "C) SANCIONES, para encarcelar a los médicos genetistas.",
+              "D) PUBLICACIONES, para divulgar los descubrimientos en revistas."
+            ],
+            correct: 1,
+            exp: "Una moratoria es un aplazamiento o pausa temporal en el desarrollo de una actividad para reflexionar o legislar sobre ella."
+          },
+          {
+            q: "4. A partir del texto, se infiere que el autor considera que la ciencia:",
+            options: [
+              "A) Progresa de forma autónoma y no requiere fiscalización de la sociedad.",
+              "B) Evoluciona a mayor velocidad que las regulaciones éticas necesarias para encauzarla.",
+              "C) Ha fracasado en la erradicación de enfermedades hereditarias.",
+              "D) Es una disciplina reservada exclusivamente para filósofos morales."
+            ],
+            correct: 1,
+            exp: "Menciona que 'la ciencia avanza a pasos agigantados, pero la bioética debe determinar los límites', sugiriendo un descalce de velocidades."
+          },
+          {
+            q: "5. ¿Cuál es la intención principal del emisor de este escrito?",
+            options: [
+              "A) Vender patentes científicas relativas a la tecnología CRISPR.",
+              "B) Informar sobre un avance biológico y advertir sobre sus graves consecuencias ético-sociales.",
+              "C) Convencer a los lectores de no someterse a tratamientos médicos modernos.",
+              "D) Explicar la fórmula química de las moléculas del ADN."
+            ],
+            correct: 1,
+            exp: "Combina la explicación científica del hallazgo con un llamado de atención de carácter preventivo sobre sus implicancias éticas."
+          }
+        ]
+      },
+      {
+        day: 4,
+        title: "Infografía: La Transición Energética y la Minería del Litio en Chile",
+        category: "Texto Discontinuo / Análisis de Datos",
+        text: `<b>DATOS CLAVE DEL TRIÁNGULO DEL LITIO Y LA MATRIZ GLOBAL</b><br><br>
+        • <b>Demanda Mundial de Litio:</b> Se estima un incremento del 400% al año 2035 debido a la masificación de vehículos eléctricos.<br>
+        • <b>Reservas en el Salar de Atacama (Chile):</b> Concentra el 36% de las reservas mundiales de litio de fácil extracción.<br>
+        • <b>Consumo de Agua Evaporativa:</b> Extraer 1 tonelada de litio mediante piscinas de evaporación requiere evaporar aproximadamente 2 millones de litros de salmuera acuífera.<br>
+        • <b>Impacto en Comunidades Atacameñas:</b> Desecación de vertientes locales, disminución del flamenco andino y alteración del balance hídrico del ecosistema frágil del desierto.<br><br>
+        <i>Conclusión analítica: Aunque el litio es indispensable para la descarbonización del transporte en el hemisferio norte, su extracción genera un 'sacrificio ambiental localizado' en los salares del norte de Chile.</i>`,
+        questions: [
+          {
+            q: "1. ¿Cuál es la paradoja ambiental central expuesta en la infografía?",
+            options: [
+              "A) El litio no sirve para fabricar baterías de autos eléctricos.",
+              "B) Para limpiar la atmósfera global se está degradando hídricamente un ecosistema local en Chile.",
+              "C) Los salares del norte de Chile tienen más agua dulce de la que se consume en Santiago.",
+              "D) La demanda de vehículos eléctricos caerá drásticamente hacia el 2035."
+            ],
+            correct: 1,
+            exp: "El texto muestra la contradicción entre reducir emisiones globales (descarbonización) a costa del sacrificio ecológico local (desecación del Salar)."
+          },
+          {
+            q: "2. Según los datos presentados, ¿qué factor impulsa el aumento del 400% en la demanda de litio?",
+            options: [
+              "A) La construcción de paneles solares residenciales.",
+              "B) El aumento masivo en la fabricación de vehículos eléctricos.",
+              "C) La exportación de sal común para uso gastronómico.",
+              "D) El reemplazo del cobre en las tuberías de agua potable."
+            ],
+            correct: 1,
+            exp: "La infografía atribuye expresamente esta proyección a la 'masificación de vehículos eléctricos'."
+          },
+          {
+            q: "3. La expresión 'sacrificio ambiental localizado' se refiere a:",
+            options: [
+              "A) Los daños ecológicos concentrados en el territorio del salar y sus comunidades.",
+              "B) Los impuestos que pagan las mineras al gobierno central.",
+              "C) Las pérdidas económicas de los fabricantes de automóviles.",
+              "D) El reciclaje obligatorio de baterías en Europa."
+            ],
+            correct: 0,
+            exp: "El término 'localizado' especifica que el impacto ambiental negativo ocurre puntualmente en la zona de extracción en el desierto."
+          },
+          {
+            q: "4. ¿Qué se infiere respecto al método de 'piscinas de evaporación'?",
+            options: [
+              "A) Es un método altamente sustentable que genera lluvia limpia en el desierto.",
+              "B) Implica un consumo masivo e irreversible de recursos hídricos en una zona de extrema aridez.",
+              "C) Es una tecnología económica que no altera la fauna silvestre.",
+              "D) Fue inventado por las comunidades atacameñas hace siglos."
+            ],
+            correct: 1,
+            exp: "Evaporar 2 millones de litros de agua acuífera por tonelada en el desierto más árido del mundo demuestra un costo hídrico altísimo."
+          },
+          {
+            q: "5. ¿Cuál es el propósito comunicativo de esta infografía?",
+            options: [
+              "A) Promover la compra de automóviles accionados por gasolina.",
+              "B) Evidenciar los costos socioambientales locales asociados a la transición energética global.",
+              "C) Felicitar a las empresas extractivas por su eficiencia tecnológica.",
+              "D) Exigir el cierre inmediato de todas las minas de cobre en Chile."
+            ],
+            correct: 1,
+            exp: "El texto busca problematizar los datos, mostrando que la energía verde global genera costos ambientales locales significativos."
+          }
+        ]
+      },
+      {
+        day: 5,
+        title: "La Erosión del Lenguaje en la Era de la Inmediatez",
+        category: "Columna de Opinión / Lingüística",
+        text: `La empobrecedora reducción del vocabulario en el habla cotidiana no es un mero capricho de lingüistas puristas. El lenguaje es la herramienta primaria con la que conceptualizamos la realidad. Si un joven dispone de apenas 300 palabras para comunicar sus vivencias emocionales, su capacidad para distinguir entre la frustración, la melancolía, el resentimiento o la nostalgia queda severamente tullida.<br><br>Al sustituir la precisión Léxica por muletillas monolíticas ('tipo', 'como que', 'básicamente'), el pensamiento se vuelve igualmente ambiguo y borroso. No se trata de exigir un léxico barroco o elitista, sino de entender que a mayor riqueza sintáctica y semántica, mayor es la nitidez para reflexionar, negociar conflictos y argumentar con libertad frente a la manipulación.`,
+        questions: [
+          {
+            q: "1. ¿Qué relación establece el autor entre el vocabulario y el pensamiento?",
+            options: [
+              "A) El pensamiento existe de forma completamente independiente de las palabras que conocemos.",
+              "B) La limitación del vocabulario empobrece directo la precisión y matiz del pensamiento del sujeto.",
+              "C) Utilizar muletillas demuestra un nivel superior de agilidad mental.",
+              "D) Las emociones no requieren del lenguaje para ser comprendidas."
+            ],
+            correct: 1,
+            exp: "El emisor sostiene que si el vocabulario es reducido, la capacidad de discernir conceptos y emociones queda 'severamente tullida'."
+          },
+          {
+            q: "2. En el primer párrafo, la palabra TULLIDA puede reemplazada por:",
+            options: [
+              "A) MEJORADA, porque simplifica la expresión de sentimientos.",
+              "B) IMPEDIDA, porque se dificulta o debilita la capacidad de razonamiento.",
+              "C) OCULTA, porque nadie puede ver las emociones ajenas.",
+              "D) EXAGERADA, porque se usan palabras demasiado largas."
+            ],
+            correct: 1,
+            exp: "Tullida se usa metafóricamente como 'mutilada' o 'impedida' en su funcionamiento pleno."
+          },
+          {
+            q: "3. ¿Qué aclara el autor para evitar que su postura sea tachada de 'elitista'?",
+            options: [
+              "A) Que apoya la eliminación de las clases de Lenguaje en la educación media.",
+              "B) Que no exige un léxico rebuscado, sino la precisión necesaria para pensar con claridad y libertad.",
+              "C) Que las muletillas deben ser aceptadas por la Real Academia Española.",
+              "D) Que solo los poetas deben utilizar un vocabulario amplio."
+            ],
+            correct: 1,
+            exp: "El texto especifica: 'No se trata de exigir un léxico barroco o elitista, sino de entender que a mayor riqueza... mayor nitidez'."
+          },
+          {
+            q: "4. Se concluye del texto que una persona con amplio dominio del lenguaje:",
+            options: [
+              "A) Es más vulnerable al engaño y a la manipulación mediática.",
+              "B) Posee mejores herramientas conceptuales para defender sus ideas y procesar sus emociones.",
+              "C) Siempre habla de manera aburrida y anticuada.",
+              "D) Tiene garantizado el éxito económico automático."
+            ],
+            correct: 1,
+            exp: "El texto concluye que un léxico rico otorga 'libertad frente a la manipulación' y 'nitidez para reflexionar y negociar'."
+          },
+          {
+            q: "5. ¿Cuál es el tono dominante del emisor en este escrito?",
+            options: [
+              "A) Burlesco e irónico.",
+              "B) Crítico, advertidor y reflexivo.",
+              "C) Neutro e indiferente.",
+              "D) Agresivo y pesimista sin solución."
+            ],
+            correct: 1,
+            exp: "El tono es de crítica reflexiva frente a un fenómeno social, argumentando la importancia de revertirlo."
+          }
+        ]
+      }
+    ];
+
+    // Local Storage System
+    const STORAGE_KEY = 'simce_max_progress_v2';
+
+    function getInitialState() {
+      return {
+        completedDays: {} // { 1: { score: 320, grade: 6.2, answers: [...] } }
+      };
+    }
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? JSON.parse(raw) : getInitialState();
+      } catch (e) {
+        return getInitialState();
+      }
+    }
+
+    function saveState(s) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
+    }
+
+    let state = loadState();
+
+    // Chilean Grading System Formula (Standard 60% Exigencia)
+    function calculateChileanGrade(correct, total) {
+      if (total === 0) return 1.0;
+      const pct = correct / total;
+      const cutoff = 0.60; // 60% exigencia
+
+      let grade = 1.0;
+      if (pct < cutoff) {
+        // Range 1.0 to 3.9
+        grade = 1.0 + 3.0 * (pct / cutoff);
+      } else {
+        // Range 4.0 to 7.0
+        grade = 4.0 + 3.0 * ((pct - cutoff) / (1.0 - cutoff));
+      }
+      return Math.round(grade * 10) / 10; // Round to 1 decimal
+    }
+
+    function calculateSimceScore(correct, total) {
+      if (total === 0) return 180;
+      const pct = correct / total;
+      return Math.round(180 + (pct * 170)); // Scale 180 - 350
+    }
+
+    function updateDashboard() {
+      const total = SIMCE_BANK.length;
+      const completedKeys = Object.keys(state.completedDays).map(Number);
+      const countCompleted = completedKeys.length;
+
+      let sumGrade = 0;
+      let sumSimce = 0;
+
+      completedKeys.forEach(k => {
+        sumGrade += state.completedDays[k].grade;
+        sumSimce += state.completedDays[k].score;
+      });
+
+      const avgGrade = countCompleted > 0 ? (sumGrade / countCompleted).toFixed(1) : '---';
+      const avgSimce = countCompleted > 0 ? Math.round(sumSimce / countCompleted) : '---';
+
+      // Unlock limit
+      let unlockedLimit = 1;
+      for (let i = 1; i <= total; i++) {
+        if (state.completedDays[i]) {
+          unlockedLimit = i + 1;
+        } else {
+          unlockedLimit = i;
+          break;
+        }
+      }
+
+      const pending = Math.max(0, Math.min(unlockedLimit, total) - countCompleted);
+
+      document.getElementById('statAvgGrade').innerText = avgGrade !== '---' ? avgGrade : '---';
+      document.getElementById('statAvgSimce').innerText = avgSimce !== '---' ? `${avgSimce} pts` : '--- pts';
+      document.getElementById('statCompleted').innerText = `${countCompleted} / ${total}`;
+      document.getElementById('statPending').innerText = pending;
+
+      renderGrid(unlockedLimit);
+    }
+
+    function renderGrid(unlockedLimit) {
+      const grid = document.getElementById('daysGrid');
+      grid.innerHTML = '';
+
+      SIMCE_BANK.forEach(item => {
+        const isDone = !!state.completedDays[item.day];
+        const isUnlocked = item.day <= unlockedLimit;
+        const result = state.completedDays[item.day];
+
+        const card = document.createElement('div');
+        card.className = `rounded-2xl border p-5 transition flex flex-col justify-between ${
+          isDone 
+            ? 'bg-slate-900/40 border-emerald-500/40 hover:border-emerald-500' 
+            : isUnlocked 
+            ? 'bg-slate-900/90 border-indigo-500/50 hover:border-indigo-400 shadow-xl shadow-indigo-950/20' 
+            : 'bg-slate-950 border-slate-900 opacity-50'
+        }`;
+
+        let statusBadge = '';
+        if (isDone) {
+          const gradeColor = result.grade >= 4.0 ? 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10' : 'text-rose-400 border-rose-500/30 bg-rose-500/10';
+          statusBadge = `<span class="${gradeColor} border text-xs px-2.5 py-1 rounded-full font-bold">
+            Nota ${result.grade.toFixed(1)} • ${result.score} pts
+          </span>`;
+        } else if (isUnlocked) {
+          statusBadge = `<span class="bg-indigo-500/20 text-indigo-300 border border-indigo-400/30 text-xs px-2.5 py-1 rounded-full font-bold animate-pulse">
+            Disponible
+          </span>`;
+        } else {
+          statusBadge = `<span class="bg-slate-800 text-slate-500 border border-slate-700 text-xs px-2.5 py-1 rounded-full font-semibold">
+            <i class="fa-solid fa-lock text-xs mr-1"></i> Bloqueado
+          </span>`;
+        }
+
+        card.innerHTML = `
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-extrabold uppercase tracking-widest text-slate-400">Ensayo ${item.day}</span>
+              ${statusBadge}
+            </div>
+            <h3 class="font-bold text-lg text-white mb-2 leading-snug font-heading">${item.title}</h3>
+            <p class="text-xs text-indigo-400 font-medium mb-4"><i class="fa-solid fa-bookmark mr-1"></i>${item.category}</p>
+          </div>
+
+          <div class="pt-3 border-t border-slate-800 flex items-center justify-between">
+            <span class="text-xs text-slate-400">${item.questions.length} Preguntas Complejas</span>
+            ${isUnlocked ? `
+              <button onclick="openTest(${item.day})" class="px-4 py-2 text-xs font-bold rounded-xl transition ${
+                isDone 
+                  ? 'bg-slate-800 hover:bg-slate-700 text-slate-200' 
+                  : 'bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white shadow-md'
+              }">
+                ${isDone ? 'Repasar / Rendir' : 'Iniciar Ensayo'}
+              </button>
+            ` : `
+              <span class="text-xs text-slate-600 italic">Aprueba el anterior</span>
+            `}
+          </div>
+        `;
+
+        grid.appendChild(card);
+      });
+    }
+
+    let currentActiveDay = null;
+
+    function openTest(dayNum) {
+      const data = SIMCE_BANK.find(d => d.day === dayNum);
+      if (!data) return;
+
+      currentActiveDay = dayNum;
+
+      document.getElementById('viewList').classList.add('hidden');
+      document.getElementById('viewTest').classList.remove('hidden');
+
+      document.getElementById('testDayBadge').innerText = `Ensayo N° ${data.day}`;
+      document.getElementById('testTextCategory').innerText = data.category;
+      document.getElementById('testTextTitle').innerText = data.title;
+      document.getElementById('testTextBody').innerHTML = data.text;
+
+      document.getElementById('resultCard').classList.add('hidden');
+      document.getElementById('testActionArea').classList.remove('hidden');
+
+      const container = document.getElementById('questionsContainer');
+      container.innerHTML = '';
+
+      const prev = state.completedDays[dayNum];
+
+      data.questions.forEach((qObj, qIdx) => {
+        const qCard = document.createElement('div');
+        qCard.className = "bg-slate-900/80 border border-slate-800 rounded-xl p-5 space-y-3.5";
+
+        let optionsHTML = '';
+        qObj.options.forEach((opt, oIdx) => {
+          const isChecked = prev && prev.answers && prev.answers[qIdx] === oIdx;
+          optionsHTML += `
+            <label class="flex items-start space-x-3 p-3.5 rounded-xl border border-slate-800 bg-slate-950 hover:bg-slate-800/60 cursor-pointer transition">
+              <input type="radio" name="q_${qIdx}" value="${oIdx}" ${isChecked ? 'checked' : ''} class="mt-1 text-indigo-600 focus:ring-indigo-500">
+              <span class="text-sm text-slate-200 leading-relaxed">${opt}</span>
+            </label>
+          `;
+        });
+
+        qCard.innerHTML = `
+          <p class="font-bold text-white text-base leading-snug">${qObj.q}</p>
+          <div class="space-y-2 pt-1">
+            ${optionsHTML}
+          </div>
+        `;
+        container.appendChild(qCard);
+      });
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function closeTest() {
+      currentActiveDay = null;
+      document.getElementById('viewTest').classList.add('hidden');
+      document.getElementById('viewList').classList.remove('hidden');
+      updateDashboard();
+    }
+
+    function submitTest() {
+      const data = SIMCE_BANK.find(d => d.day === currentActiveDay);
+      if (!data) return;
+
+      const userAns = [];
+      let correctCount = 0;
+
+      data.questions.forEach((qObj, qIdx) => {
+        const sel = document.querySelector(`input[name="q_${qIdx}"]:checked`);
+        const val = sel ? parseInt(sel.value) : -1;
+        userAns.push(val);
+        if (val === qObj.correct) correctCount++;
+      });
+
+      const totalQ = data.questions.length;
+      const grade = calculateChileanGrade(correctCount, totalQ);
+      const simcePoints = calculateSimceScore(correctCount, totalQ);
+
+      state.completedDays[currentActiveDay] = {
+        grade: grade,
+        score: simcePoints,
+        raw: correctCount,
+        total: totalQ,
+        answers: userAns
+      };
+      saveState(state);
+
+      document.getElementById('testActionArea').classList.add('hidden');
+      const resultCard = document.getElementById('resultCard');
+      resultCard.classList.remove('hidden');
+
+      const resGradeEl = document.getElementById('resGrade');
+      resGradeEl.innerText = grade.toFixed(1);
+      resGradeEl.className = `text-4xl font-black font-heading ${grade >= 4.0 ? 'text-emerald-400' : 'text-rose-400'}`;
+
+      document.getElementById('resSimceScore').innerText = `${simcePoints} pts`;
+      const pct = Math.round((correctCount / totalQ) * 100);
+      document.getElementById('resAccuracy').innerText = `${correctCount} de ${totalQ} respuestas correctas (${pct}% de logro)`;
+
+      const fbList = document.getElementById('resFeedbackList');
+      fbList.innerHTML = '';
+
+      data.questions.forEach((qObj, qIdx) => {
+        const uChoice = userAns[qIdx];
+        const isRight = uChoice === qObj.correct;
+
+        const div = document.createElement('div');
+        div.className = `p-4 rounded-xl border ${isRight ? 'bg-emerald-950/20 border-emerald-800/40 text-emerald-200' : 'bg-rose-950/20 border-rose-800/40 text-rose-200'}`;
+
+        div.innerHTML = `
+          <div class="flex items-center justify-between font-bold mb-1.5">
+            <span>Pregunta ${qIdx + 1}: ${isRight ? '✓ Correcta' : '✗ Incorrecta'}</span>
+          </div>
+          <p class="text-xs text-slate-300 leading-relaxed mb-2">${qObj.exp}</p>
+        `;
+        fbList.appendChild(div);
+      });
+
+      resultCard.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function resetAppConfirm() {
+      if (confirm('¿Deseas reiniciar tu avance? Esto borrará tus calificaciones guardadas.')) {
+        localStorage.removeItem(STORAGE_KEY);
+        state = getInitialState();
+        saveState(state);
+        updateDashboard();
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      updateDashboard();
+    });
+  </script>
+</body>
+</html>
